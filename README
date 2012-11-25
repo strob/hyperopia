@@ -9,3 +9,26 @@ Wikipedia + Books
 An attempt to cross-reference an offline wikipedia dump
 with a digital library.
 
+--
+
+# setup (45gb)
+
+Download 
+  - enwiki-latest-pages-articles-multistream-index.txt.bz2
+  - enwiki-latest-pages-articles-multistream.xml.bz2
+  - enwiki-latest-categorylinks.sql.gz
+
+from
+http://dumps.wikimedia.org/enwiki/latest/
+
+import the enwiki category database into mysql:
+
+% zcat enwiki-latest-categorylinks.sql.gz | mysql -u USER -p DBNAME
+
+copy mysqlpassword.example.py to mysqlpassword.py and fill in your db info
+
+make indices
+% python2 mk-indices.py /path/to/enwiki-latest-pages-articles-multistream.xml.bz2
+
+serve
+% python2 serve.py /path/to/enwiki-latest-pages-articles-multistream.xml.bz2
