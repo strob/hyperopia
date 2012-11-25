@@ -1,0 +1,14 @@
+body {
+    padding: 0;
+}
+.wikipage {
+    border: 1px solid black;
+    float: left;
+}
+.wikipage h1 {
+    font-family: Helvetica, sans;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}

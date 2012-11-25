@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <script src="/jquery.js"></script>
+    <script src="/hyper.js"></script>
+    <link rel="stylesheet" href="/hyper.css" />
+  </head>
+  <body>
+    <script>
+    var path = document.location.pathname.split('/');
+    var name = path[path.length - 1];
+    var page = new HYPER.WikiPage(name);
+    $("body")
+      .append(page.$el);
+    page.toggle();
+    </script>
+  </body>
+</html>
