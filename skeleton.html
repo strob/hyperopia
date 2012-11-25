@@ -8,7 +8,7 @@
     <script>
     var path = document.location.pathname.split('/');
     var name = path[path.length - 1];
-    var page = new HYPER.WikiPage(name);
+    var page = new HYPER.WikiPage(decodeURI(name));
     $("body")
       .append(page.$el);
     page.toggle();

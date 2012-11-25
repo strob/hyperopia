@@ -1,12 +1,13 @@
 var HYPER = HYPER || {};
 (function(HYPER) {
-    HYPER.WikiPage = function(name) {
+    HYPER.WikiPage = function(name, display) {
         var that = this;
         this.name = name;
-        this.$el = $("<div>")
+        this.$el = $("<span>")
             .addClass("wikipage")
-            .append($("<h1>")
-                    .html(decodeURI(name))
+            .append($("<span>")
+                    .addClass('name')
+                    .html(display || name)
                     .click(function() { that.toggle(); }));
     };
     HYPER.WikiPage.prototype.fetch_raw = function(cb) {
@@ -26,37 +27,21 @@ var HYPER = HYPER || {};
     };
     HYPER.WikiPage.prototype.toggle = function() {
         if(this.expanded) {
+            this.expanded = false;
             this.contract();
         }
         else {
+            this.expanded = true;
             this.expand();
         }
     };
     HYPER.WikiPage.prototype.contract = function() {
-        this.expanded = false;
         this.$el.find(".wikibody").remove();
     };
-    // HYPER.WikiPage.prototype.expand = function() {
-    //     var that = this;
-    //     if(this.expanded) {
-    //         return;
-    //     }
-    //     this.expanded = true;
-
-    //     this.fetch_raw(function(txt) {
-    //         that.$el.append(
-    //             $("<div>")
-    //                 .addClass("wikibody")
-    //                 .html(
-    //                     make_paragraphs(
-    //                         make_links(
-    //                             remove_templates(txt)))));
-    //     });
-    // };
     HYPER.WikiPage.prototype.expand = function() {
         var that = this;
         this.fetch_raw(function(txt) {
-            that.$el.append(HYPER.parse_wikitext(txt));
+            that.$el.append(HYPER.parse_wikitext(txt).addClass('wikibody'));
         });
     };
     HYPER.Book = function(spec) {
@@ -117,7 +102,9 @@ var HYPER = HYPER || {};
                 return [];
             }
             var split = link.split('|');
-            return $("<a>", {href: '/a/'+split[0]}).html(split[split.length-1]);
+            var page = new HYPER.WikiPage(split[0], split[split.length-1]);
+            return page.$el;
+            // return $("<a>", {href: '/a/'+split[0]}).html(split[split.length-1]);
         }, identity, 2, 2);
     };
 
@@ -129,42 +116,4 @@ var HYPER = HYPER || {};
             return templates(para, wipe, wikilinks);
         });
     };
-
-    // micro wiki-formatter.
-    function remove_templates(txt) {
-        var out = "";
-        var cur_idx = 0;
-        var end_idx = 0;
-        var starts = [];
-        while(true) {
-            var next_start=txt.indexOf('{{', cur_idx);
-            var next_end=txt.indexOf('}}', cur_idx);
-
-            if(next_start < next_end && next_start >= 0) {
-                starts.push(next_start);
-                cur_idx = next_start + 1;
-            }
-            else if(next_end > 0) {
-                var start = starts.pop();
-                if(starts.length == 0) {
-                    out += txt.slice(end_idx, start);
-                    end_idx = next_end + 2;
-                }
-                cur_idx = next_end + 1;
-            }
-            else {
-                out += txt.slice(end_idx);
-                return out;
-            }
-        }
-    }
-    function make_links(txt) {
-        // XXX: $2 with fallback to $1?
-        // XXX: Normalize links?
-        return txt.replace(/\[\[([^|\]]*)[^\]]*\]\]/g, "<a href='/a/$1'>$1</a>")
-    }
-
-    function make_paragraphs(txt) {
-        return txt.replace(/\n([^\n]*)\n/g, "<p>$1</p>");
-    }
 })(HYPER);
