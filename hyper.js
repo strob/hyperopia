@@ -74,7 +74,7 @@ var HYPER = HYPER || {};
                 starts.push(next_st + cur_idx);
                 cur_idx += next_st + startLen;
             }
-            else if(next_end > 0) {
+            else if(next_end >= 0) {
                 var start = starts.pop();
                 if(start !== undefined && starts.length === 0) {
                     if(last_end < start) {
