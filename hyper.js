@@ -95,7 +95,25 @@ var HYPER = HYPER || {};
 
     function templates(txt, onMatch, onFill) {
         return sweep_parse(txt, '{{', '}}', onMatch, onFill, 2, 2);
-    };
+    }
+    function wikihacks(txt) {
+        function headings(txt) {
+            var i = 6;
+            var out = txt.slice(0);
+            while(i>0) {
+                var bar = '';
+                for(var j=0; j<i; j++) {
+                    bar += '=';
+                }
+                var re = new RegExp(bar+'(.*)'+bar, 'g');
+                out = out.replace(re, '<h'+i+'>$1</h'+i+'>\n');
+                i--;
+            }
+            return out;
+        }
+        return headings(txt)
+            .replace(/[\n^]\*/g, '<br>');
+    }
     function wikilinks(txt) {
         return sweep_parse(txt, /\[\[/g, /\]\]/g, function(link) {
             if(link.indexOf("File:") >= 0) {
@@ -105,7 +123,7 @@ var HYPER = HYPER || {};
             var page = new HYPER.WikiPage(split[0], split[split.length-1]);
             return page.$el;
             // return $("<a>", {href: '/a/'+split[0]}).html(split[split.length-1]);
-        }, identity, 2, 2);
+        }, wikihacks, 2, 2);
     };
 
     function identity(x) { return x; }
