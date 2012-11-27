@@ -101,7 +101,7 @@ var HYPER = HYPER || {};
             var i = 6;
             var out = txt.slice(0);
             while(i>0) {
-                var bar = '';
+                var bar = '[^\n]';
                 for(var j=0; j<i; j++) {
                     bar += '=';
                 }
