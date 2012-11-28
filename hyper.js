@@ -5,7 +5,7 @@ var HYPER = HYPER || {};
         this.name = name;
         this.$el = $("<span>")
             .addClass("wikipage")
-            .append($("<span>")
+            .append($("<span>", {title: name})
                     .addClass('name')
                     .html(display || name)
                     .click(function() { that.toggle(); }));
