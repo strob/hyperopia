@@ -101,18 +101,18 @@ var HYPER = HYPER || {};
             var i = 6;
             var out = txt.slice(0);
             while(i>0) {
-                var bar = '[^\n]';
+                var bar = '';
                 for(var j=0; j<i; j++) {
                     bar += '=';
                 }
-                var re = new RegExp(bar+'(.*)'+bar, 'g');
+                var re = new RegExp('^'+bar+'(.*)'+bar, 'gm');
                 out = out.replace(re, '<h'+i+'>$1</h'+i+'>\n');
                 i--;
             }
             return out;
         }
         return headings(txt)
-            .replace(/[\n^]\*/g, '<br>');
+            .replace(/[\n^][\*#]/g, '<br>');
     }
     function wikilinks(txt) {
         return sweep_parse(txt, /\[\[/g, /\]\]/g, function(link) {
