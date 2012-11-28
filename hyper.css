@@ -12,5 +12,12 @@ body {
     cursor: pointer;
 }
 .template {
+    display: inline;
+}
+.template .name {
     background-color: #ccc;
+}
+.hasbook.template .name {
+    background-color: yellow;
+    border: 1px dotted black;
 }

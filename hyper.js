@@ -82,10 +82,16 @@ var HYPER = HYPER || {};
         });
 
         this.$el = $("<div>")
+            .addClass('template')
             .append($("<span>")
-                    .addClass('template')
+                    .addClass('name')
                     .html(this.args[0])
                     .click(function() {that.toggle();}));
+
+        if(this.is_book()) {
+            this.$el
+                .addClass('hasbook');
+        }
     };
     HYPER.Template.prototype.toggle = function() {
         // XXX: Abstract?
@@ -121,6 +127,11 @@ var HYPER = HYPER || {};
     };
     HYPER.Template.prototype.contract = function() {
         this.$rendered.remove();
+    };
+    HYPER.Template.prototype.is_book = function() {
+        if('isbn' in this.kw) {
+            return this.kw['isbn'];
+        }
     };
 
     function strip(txt) {
