@@ -17,7 +17,7 @@ class Articles(resource.Resource):
             node = self.dump.get_by_title(name)
         except KeyError:
             try:
-                name = name[0].capitalize() + name[1:]
+                name = name[0].capitalize() + name[1:].replace('_', ' ')
                 node = self.dump.get_by_title(name)
             except KeyError:
                 return resource.NoResource()

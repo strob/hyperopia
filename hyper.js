@@ -116,7 +116,7 @@ var HYPER = HYPER || {};
     }
     function wikilinks(txt) {
         return sweep_parse(txt, /\[\[/g, /\]\]/g, function(link) {
-            if(link.indexOf("File:") >= 0) {
+            if(link.indexOf("File:") >= 0 || link.indexOf("Image:") >= 0) {
                 return [];
             }
             var split = link.split('|');
