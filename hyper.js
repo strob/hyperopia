@@ -41,7 +41,19 @@ var HYPER = HYPER || {};
     HYPER.WikiPage.prototype.expand = function() {
         var that = this;
         this.fetch_raw(function(txt) {
-            that.$el.append(HYPER.parse_wikitext(txt).addClass('wikibody'));
+            that.$el.append(that.parse().addClass('wikibody'));
+        });
+    };
+    HYPER.WikiPage.prototype.parse = function() {
+        var that = this;
+        this.templates = [];
+        this.links = [];
+        var onTemplate = function(tpl) { that.templates.push(tpl); }
+        var onLink = function(lnk) { that.links.push(lnk); }
+        return paragraphs(this.raw, function(para) {
+            return templates(para, 
+                             function(txt) { return wikilinks(txt, onLink); }, 
+                             onTemplate);
         });
     };
     HYPER.Book = function(spec) {
@@ -160,11 +172,12 @@ var HYPER = HYPER || {};
         }
     };
 
-    function templates(txt, onFill) {
+    function templates(txt, onFill, onTemplate) {
         return sweep_parse(txt, '{{', '}}', function(templ) {
             var temp = new HYPER.Template(templ);
             // temp.expand();
             // console.log(temp);
+            onTemplate(temp);
             return temp.$el;
         }, onFill, 2, 2);
     }
@@ -186,13 +199,14 @@ var HYPER = HYPER || {};
         return headings(txt)
             .replace(/[\n^][\*#]/g, '<br>');
     }
-    function wikilinks(txt) {
+    function wikilinks(txt, onWikilink) {
         return sweep_parse(txt, /\[\[/g, /\]\]/g, function(link) {
             if(link.indexOf("File:") >= 0 || link.indexOf("Image:") >= 0) {
                 return [];
             }
             var split = link.split('|');
             var page = new HYPER.WikiPage(split[0], split[split.length-1]);
+            onWikilink(page);
             return page.$el;
             // return $("<a>", {href: '/a/'+split[0]}).html(split[split.length-1]);
         }, wikihacks, 2, 2);
@@ -201,9 +215,4 @@ var HYPER = HYPER || {};
     function identity(x) { return x; }
     function wipe(x) { return ''; }
 
-    HYPER.parse_wikitext = function(txt) {
-        return paragraphs(txt, function(para) {
-            return templates(para, wikilinks);
-        });
-    };
 })(HYPER);
