@@ -11,3 +11,6 @@ body {
     padding: 0;
     cursor: pointer;
 }
+.template {
+    background-color: #ccc;
+}

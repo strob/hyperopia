@@ -49,6 +49,73 @@ var HYPER = HYPER || {};
     };
     HYPER.Tree = function() {
     };
+    HYPER.Template = function(raw) {
+        var that = this;
+
+        this.raw = raw;
+
+        // basic parser.
+        var fields = raw.split('|');
+        this.args = [];
+        this.kw = {};
+        fields.forEach(function(val) {
+            var kv = val.split('=');
+            var k = strip(kv[0]);
+            if(kv.length===1) {
+                that.args.push(k);
+            }
+            else {
+                that.kw[k] = strip(kv[1]);
+            }
+        });
+
+        this.$el = $("<div>")
+            .append($("<span>")
+                    .addClass('template')
+                    .html(this.args[0])
+                    .click(function() {that.toggle();}));
+    };
+    HYPER.Template.prototype.toggle = function() {
+        // XXX: Abstract?
+        if(this.expanded) {
+            this.expanded = false;
+            this.contract();
+        }
+        else {
+            this.expanded = true;
+            this.expand();
+        }
+    };
+    HYPER.Template.prototype.expand = function() {
+        var that = this;
+        this.$rendered = $("<div>")
+            .addClass('templatebody')
+            .appendTo(this.$el);
+        this.args.slice(1).forEach(function(arg) {
+            $("<span>")
+                .addClass('arg')
+                .html(arg)
+                .appendTo(that.$rendered);
+        });
+        var $table = $("<table>")
+            .appendTo(this.$rendered);
+        for(var key in this.kw) {
+            var val = this.kw[key];
+            $("<tr>")
+                .appendTo($table)
+                .append($("<td>").html(key))
+                .append($("<td>").html(val));
+        };
+    };
+    HYPER.Template.prototype.contract = function() {
+        this.$rendered.remove();
+    };
+
+    function strip(txt) {
+        return txt
+            .replace(/^\s*/g, '')
+            .replace(/\s*$/g, '');
+    }
 
     function split_parse(txt, splitExp, onMatch) {
         var $out = $("<div>");
@@ -93,8 +160,13 @@ var HYPER = HYPER || {};
         }
     };
 
-    function templates(txt, onMatch, onFill) {
-        return sweep_parse(txt, '{{', '}}', onMatch, onFill, 2, 2);
+    function templates(txt, onFill) {
+        return sweep_parse(txt, '{{', '}}', function(templ) {
+            var temp = new HYPER.Template(templ);
+            // temp.expand();
+            // console.log(temp);
+            return temp.$el;
+        }, onFill, 2, 2);
     }
     function wikihacks(txt) {
         function headings(txt) {
@@ -131,7 +203,7 @@ var HYPER = HYPER || {};
 
     HYPER.parse_wikitext = function(txt) {
         return paragraphs(txt, function(para) {
-            return templates(para, wipe, wikilinks);
+            return templates(para, wikilinks);
         });
     };
 })(HYPER);
