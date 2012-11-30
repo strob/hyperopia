@@ -211,7 +211,8 @@ var HYPER = HYPER || {};
             .replace(/[\n^][\*#]/g, '<br>')
             .replace(/'''''([^']*)'''''/g, '<b><i>$1</i></b>')
             .replace(/'''([^']*)'''/g, '<b>$1</b>')
-            .replace(/''([^']*)''/g, '<i>$1</i>');
+            .replace(/''([^']*)''/g, '<i>$1</i>')
+            .replace(/\[http[\S]* ([^\]]*)]/g, '$1')
     }
     function wikilinks(txt, onWikilink) {
         return sweep_parse(txt, /\[\[/g, /\]\]/g, function(link) {
